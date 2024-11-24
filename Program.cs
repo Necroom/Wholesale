@@ -55,19 +55,6 @@ namespace Wholesale_LINQ
             Console.WriteLine();
             Console.ReadKey();
         }
-        static void Sel(WholesaleContext db)
-        {
-            var query = from p in db.Products
-                        join t in db.ProductsTypes on p.TypeId equals t.Id
-                        where t.Packing == "коробка"
-                        select new
-                        {
-                            Id = p.Id,
-                            Name = p.Name,
-                            Type = t.Packing
-                        };
-            Print("Список с типом коробка", query.Take(5).ToList());
-        }
         static void Select(WholesaleContext db)
         {
             // Задание 1 - выборка
