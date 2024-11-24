@@ -1,0 +1,40 @@
+name: Build and Test .NET Project on macOS and Linux
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest] # Указываем платформы: Linux и macOS
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      # Шаг 1: Клонируем код репозитория
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Шаг 2: Настройка .NET SDK
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0  # Версия .NET SDK
+
+      # Шаг 3: Восстанавливаем зависимости
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Шаг 4: Сборка проекта
+      - name: Build project
+        run: dotnet build --configuration Release --no-restore
+
+      # Шаг 5: Выполнение тестов
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal
