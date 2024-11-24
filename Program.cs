@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -9,6 +10,32 @@ namespace Wholesale_LINQ
     {
         static void Main(string[] args)
         {
+            var builder = new ConfigurationBuilder();
+            // установка пути к текущему каталогу
+            builder.SetBasePath(Directory.GetCurrentDirectory());
+            // получаем конфигурацию из файла appsettings.json
+            builder.AddJsonFile("appsettings.json");
+            // создаем конфигурацию
+            var config = builder.Build();
+            // получаем строку подключения
+            string connectionString = config.GetConnectionString("DefaultConnection");
+
+            var optionsBuilder = new DbContextOptionsBuilder<WholesaleContext>();
+            var options = optionsBuilder
+                .UseSqlServer(connectionString)
+                .Options;
+
+            using (WholesaleContext db = new WholesaleContext(options))
+            {
+                var products = db.Products.Take(5).ToList();
+                Console.WriteLine("Демонстрация подключения к базе данных.");
+                foreach (Product u in products)
+                {
+                    Console.WriteLine($"{u.Id}.{u.Name}");
+                }
+            }
+            Console.Read();
+
             using (WholesaleContext context = new())
             {
                 Select(context);
